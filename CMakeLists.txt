@@ -19,11 +19,6 @@ if (NOT CMAKE_BUILD_TYPE)
 endif ()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-find_package(co_context QUIET)
-if (co_context_DIR)
-    add_compile_definitions(HAS_CO_CONTEXT)
-    set(co_context_link)
-endif ()
 
 # input: D:/dev/workspace/clion/cpp_complex/oj/pat/pat_121_151_a.cpp
 # output: pat_pat_121_151_a
@@ -40,8 +35,4 @@ function(get_better_target_name out path)
 endfunction()
 
 add_subdirectory(alg_notes)
-add_subdirectory(concurrency)
-add_subdirectory(cpp20_advanced_programing)
-add_subdirectory(cpp_core_guide_lines)
 add_subdirectory(oj)
-add_subdirectory(professional_cpp)

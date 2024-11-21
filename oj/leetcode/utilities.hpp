@@ -9,12 +9,15 @@
 #include <algorithm>
 #include <random>
 #include <format>
+#include <queue>
+#include <stack>
+#include <limits>
 
 inline int gen_random(int min, int max)
 {
-    static std::random_device rd;
-    static std::mt19937 engine{rd()};
-    static std::uniform_int_distribution<int> dist(min, max);
+    std::random_device rd;
+    std::mt19937 engine{rd()};
+    std::uniform_int_distribution<int> dist(min, max);
 
     return dist(engine);
 }
@@ -39,6 +42,20 @@ inline bool is_sorted(const std::vector<int> &arr)
             return false;
     }
     return true;
+}
+
+template<typename T>
+inline void print_binary(T n)
+{
+    int s = sizeof(T) * 8;
+    for (int i = s - 1; i >= 0; --i)
+    {
+        if ((n & (1 << i)) == 0)
+            std::cout << "0";
+        else
+            std::cout << "1";
+    }
+    std::cout << "\n";
 }
 
 
