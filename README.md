@@ -3,8 +3,8 @@
 ## OJ部分
 ### pat | newcoder | alg-notes | leetcode
 - 项目结构：  
-[cpp_alg/oj](xxx)  
-[cpp_alg/alg_notes](xxx)
+[cpp_alg/oj](https://github.com/lsqyling/alg/tree/main/alg_notes)  
+[cpp_alg/alg_notes](https://github.com/lsqyling/alg/tree/main/oj)
 - 这是Online Judge算法方面的练习，主要包括浙大PAT 甲级和乙级，牛客网的基础算法，以及将要更新的清华的DS课程算法的Judge。  
 - 每天会更新一些这方面的算法题目，感兴趣的朋友可以查看参考。
 - alg_notes-算法笔记，胡凡主编，主要以题目的形式进行算法方面的讲解，包括树图动态规划等。
