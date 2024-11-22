@@ -16,7 +16,7 @@ namespace leetcode_62 {
 class Solution
 {
 public:
-    ListNode *reverseList(ListNode *head)
+    static ListNode *reverseList(ListNode *head)
     {
         ListNode *cur = head, *prev = nullptr;
         while (cur)
@@ -37,7 +37,7 @@ namespace leetcode_21 {
 class Solution
 {
 public:
-    ListNode *mergeTwoLists(ListNode *list1, ListNode *list2)
+    static ListNode *mergeTwoLists(ListNode *list1, ListNode *list2)
     {
         if (list1 == nullptr && list2 == nullptr)
             return nullptr;
@@ -83,7 +83,7 @@ namespace leetcode_2 {
 class Solution
 {
 public:
-    ListNode *addTwoNumbers(ListNode *l1, ListNode *l2)
+    static ListNode *addTwoNumbers(ListNode *l1, ListNode *l2)
     {
         ListNode *list{nullptr}, *cur;
         ListNode *cur1 = l1, *cur2 = l2;
@@ -124,7 +124,7 @@ namespace leetcode_86 {
 class Solution
 {
 public:
-    ListNode *partition(ListNode *head, int x)
+    static ListNode *partition(ListNode *head, int x)
     {
         if (head == nullptr)
             return head;
@@ -404,6 +404,50 @@ private:
 };
 }
 
+using single_list::ListNode;
+
+namespace leetcode_23 {
+/*
+ * 23. Merge k Sorted Lists
+ *
+ * You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.
+ *
+ * Merge all the linked-lists into one sorted linked-list and return it.
+ */
+class Solution {
+public:
+    static ListNode* mergeKLists(std::vector<ListNode*>& lists) {
+        auto less = [](ListNode *lhs, ListNode *rhs) {
+            return lhs->val > rhs->val;
+        };
+        std::priority_queue<ListNode *, std::vector<ListNode *>, decltype(less)> queue(less);
+        for (auto item: lists)
+        {
+            if (item)
+                queue.push(item);
+        }
+        if (queue.empty())
+            return nullptr;
+        ListNode *head{queue.top()};
+        auto cur = head;
+        queue.pop();
+
+        while (!queue.empty())
+        {
+            if (cur->next)
+                queue.push(cur->next);
+
+            cur->next = queue.top();
+            queue.pop();
+
+            cur = cur->next;
+        }
+
+        return head;
+    }
+};
+}
+
 
 
 int main()
@@ -412,6 +456,8 @@ int main()
     print_binary(i);
     print_binary(j);
     print_binary(k);
+
+
 
 
 
