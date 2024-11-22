@@ -420,7 +420,7 @@ public:
         auto less = [](ListNode *lhs, ListNode *rhs) {
             return lhs->val > rhs->val;
         };
-        std::priority_queue<ListNode *, std::vector<ListNode *>, decltype(less)> queue(less);
+        std::priority_queue<ListNode *, std::vector<ListNode *>, decltype(less)> queue;
         for (auto item: lists)
         {
             if (item)
@@ -450,15 +450,14 @@ public:
 
 
 
+
+
 int main()
 {
     int i = 768, j = 12288, k = -1280;
     print_binary(i);
     print_binary(j);
     print_binary(k);
-
-
-
 
 
     return 0;
