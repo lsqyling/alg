@@ -1,4 +1,4 @@
-#include "utilities.hpp"
+#include "../utilities.hpp"
 
 namespace leetcode_912 {
 class Solution {
@@ -9,6 +9,7 @@ public:
         quick_3way_sort(nums, 0, (int)nums.size()-1);
         quick_sort(nums, 0, (int)nums.size()-1);
         heap_sort(nums);
+        radix_sort_s(nums);
         return nums;
     }
 
@@ -185,9 +186,74 @@ public:
         }
     }
 
+    int bits_of(int num, int base)
+    {
+        int ans = 0;
+        do
+        {
+            num /= base;
+            ++ans;
+        } while (num);
+        return ans;
+    }
+
+    void radix_sort_s(std::vector<int> &arr)
+    {
+        int n = (int)arr.size();
+        int min = arr[0];
+        for (int i = 1; i < n; ++i)
+        {
+            if (arr[i] < min)
+                min = arr[i];
+        }
+        int max = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            arr[i] -= min;
+            max = std::max(max, arr[i]);
+        }
+        radix_sort(arr, n, bits_of(max, BASE));
+        for (int i = 0; i < n; ++i)
+        {
+            arr[i] += min;
+        }
+    }
+
+
+    void radix_sort(std::vector<int> &arr, int n, int bits)
+    {
+        for (int offset = 1; bits > 0; offset *= BASE, --bits)
+        {
+            std::fill(cnt, cnt + BASE, 0);
+            for (int i = 0; i < n; ++i)
+            {
+                ++cnt[(arr[i]/offset)%BASE];
+            }
+            for (int i = 1; i < BASE; ++i)
+            {
+                cnt[i] += cnt[i-1];
+            }
+            for (int i = n-1; i >= 0; --i)
+            {
+                heap[--cnt[(arr[i]/offset)%BASE]] = arr[i];
+            }
+            for (int i = 0; i < n; ++i)
+            {
+                arr[i] = heap[i];
+            }
+        }
+    }
 
 
 private:
+    static constexpr int LEN = 5 * 10'000;
+    static constexpr int MIN = -5 * 10'000;
+    static constexpr int MAX = 5 * 10'000;
+    static constexpr int BASE = 10;
+    static inline int cnt[BASE]{};
+    static inline int heap[LEN]{};
+
+
     static constexpr int N = 50'005;
     static constexpr int CutOff = 100;
     inline static int aux[N];
