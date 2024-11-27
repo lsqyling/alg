@@ -448,6 +448,293 @@ public:
 };
 }
 
+namespace leetcode_160 {
+class Solution {
+public:
+    static ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        auto p1 = headA;
+        auto p2 = headB;
+        int diff = 0;
+        while (p1->next)
+        {
+            p1 = p1->next;
+            ++diff;
+        }
+        while (p2->next)
+        {
+            p2 = p2->next;
+            --diff;
+        }
+        if (p1 != p2)
+            return nullptr;
+
+        if (diff >= 0)
+        {
+            p1 = headA;
+            p2 = headB;
+        }
+        else
+        {
+            p1 = headB;
+            p2 = headA;
+        }
+        diff = std::abs(diff);
+        while (diff--)
+            p1 = p1->next;
+        while (p1 != p2)
+        {
+            p1 = p1->next;
+            p2 = p2->next;
+        }
+        return p1;
+    }
+};
+}
+
+namespace leetcode_25 {
+//25. Reverse Nodes in k-Group
+class Solution {
+public:
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        if (head == nullptr || head->next == nullptr || k < 2)
+            return head;
+
+        auto tail = head;
+        for (int i = 0; i < k; ++i)
+        {
+            if (tail == nullptr)
+                return head;
+            tail = tail->next;
+        }
+        ListNode *pre{nullptr};
+        auto cur = head;
+        while (cur != tail)
+        {
+            auto next = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = next;
+        }
+
+        head->next = reverseKGroup(tail, k);
+        return pre;
+    }
+};
+}
+
+namespace leetcode_138 {
+struct Node
+{
+  int val;
+  Node *next;
+  Node *random;
+  explicit Node(int val_) : val(val_), next(nullptr), random(nullptr) {}
+};
+
+class Solution {
+public:
+    static Node* copyRandomList(Node* head) {
+        if (head == nullptr)
+            return nullptr;
+
+        auto p = head;
+        while (p)
+        {
+            auto node = new Node(p->val);
+            node->next = p->next;
+            p->next = node;
+            p = node->next;
+        }
+
+        p = head;
+        Node *p1;
+
+        while (p)
+        {
+            auto next = p->next->next;
+            p1 = p->next;
+
+            p1->random = p->random ? p->random->next : nullptr;
+            p = next;
+        }
+
+        auto newhead = head->next;
+        p = head;
+
+        while (p)
+        {
+            auto next = p->next->next;
+            p1 = p->next;
+
+            p->next = next;
+            p1->next = next ? next->next : nullptr;
+
+            p = next;
+        }
+
+        return newhead;
+    }
+};
+}
+
+namespace leetcode_234 {
+//234. Palindrome Linked List
+class Solution {
+public:
+    static bool isPalindrome(ListNode* head) {
+        if (head == nullptr || head->next == nullptr)
+            return true;
+
+        auto slow = head;
+        auto fast = head;
+        while (fast->next && fast->next->next)
+        {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+
+        auto pre = slow;
+        auto cur = slow->next;
+        pre->next = nullptr;
+        while (cur)
+        {
+            auto next = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = next;
+        }
+//        head -> ... ->slow <-...<-pre
+        auto left = head;
+        auto right = pre;
+        bool ans = true;
+        while (left && right)
+        {
+            if (left->val != right->val)
+            {
+                ans = false;
+                break;
+            }
+            left = left->next;
+            right = right->next;
+        }
+
+        cur = pre->next;
+        pre->next = nullptr;
+        while (cur)
+        {
+            auto next = cur->next;
+            cur->next = pre;
+            pre = cur;
+            cur = next;
+        }
+
+        return ans;
+    }
+};
+}
+
+namespace leetcode_142 {
+//142. Linked List Cycle II
+class Solution {
+public:
+    static ListNode *detectCycle(ListNode *head) {
+        auto slow = head;
+        auto fast = head;
+        while (fast && fast->next)
+        {
+            slow = slow->next;
+            fast = fast->next->next;
+            if (slow == fast)
+                break;
+        }
+        if (fast == nullptr || fast->next == nullptr)
+            return nullptr;
+        slow = head;
+        while (slow != fast)
+        {
+            slow = slow->next;
+            fast = fast->next;
+        }
+        return slow;
+    }
+};
+}
+
+namespace leetcode_148 {
+//148. Sort List
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        return sort_list(head, nullptr);
+    }
+
+    ListNode *sort_list(ListNode *head, ListNode *tail)
+    {
+        if (head == nullptr)
+            return head;
+        if (head->next == tail)
+        {
+            head->next = nullptr;
+            return head;
+        }
+
+        auto slow = head;
+        auto fast = head;
+        while (fast != tail && fast->next != tail)
+        {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+
+        auto mid = slow;
+        auto h1 = sort_list(head, mid);
+        auto h2 = sort_list(mid, tail);
+
+        return merge(h1, h2);
+    }
+
+    ListNode *merge(ListNode *h1, ListNode *h2)
+    {
+        ListNode dummyhead;
+        auto cur = &dummyhead;
+        auto cur1 = h1;
+        auto cur2 = h2;
+
+        while (cur1 && cur2)
+        {
+            if (cur1->val <= cur2->val)
+            {
+                cur->next = cur1;
+                cur1 = cur1->next;
+            }
+            else
+            {
+                cur->next = cur2;
+                cur2 = cur2->next;
+            }
+            cur = cur->next;
+        }
+
+        if (cur1)
+            cur->next = cur1;
+        else if (cur2)
+            cur->next = cur2;
+
+        return dummyhead.next;
+    }
+};
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

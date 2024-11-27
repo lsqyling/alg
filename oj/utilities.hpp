@@ -13,6 +13,12 @@
 #include <stack>
 #include <limits>
 #include <cstdio>
+#include <set>
+#include <map>
+#include <sstream>
+#include <unordered_map>
+#include <unordered_set>
+
 
 #ifdef _MSC_VER
 #define scanf(fmt, ...) scanf_s(fmt, __VA_ARGS__)

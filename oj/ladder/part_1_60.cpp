@@ -1,11 +1,4 @@
-#include <cstdio>
-#include <set>
-#include <queue>
-#include <algorithm>
-#include <cstring>
-#include <cmath>
-#include <iostream>
-#include <sstream>
+#include "../utilities.hpp"
 
 namespace L2_005 {
 constexpr int N = 55;
