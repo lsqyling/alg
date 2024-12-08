@@ -61,7 +61,7 @@ void test_finds()
     std::vector<int> arr{0, 3, 4, 6, 8, 12, 15, 21, 21, 21, 23, 25};
     std::cout << std::format("25 pos: {}\n", find(arr, 23));
 
-    std::cout << std::format(">=16 left pos: {}\n", find_left(arr, 16));
+    std::cout << std::format(">=26 left pos: {}\n", find_left(arr, 26));
     std::cout << std::format("<=21 right pos: {}\n", find_right(arr, 21));
 }
 

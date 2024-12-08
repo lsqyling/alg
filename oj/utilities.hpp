@@ -18,6 +18,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
+#include <chrono>
 
 
 #ifdef _MSC_VER
@@ -28,8 +29,8 @@
 
 inline int gen_random(int min, int max)
 {
-    std::random_device rd;
-    std::mt19937 engine{rd()};
+    static std::random_device rd;
+    static std::mt19937 engine{rd()};
     std::uniform_int_distribution<int> dist(min, max);
 
     return dist(engine);
@@ -69,6 +70,23 @@ inline void print_binary(T n)
             std::cout << "1";
     }
     std::cout << "\n";
+}
+
+inline std::vector<std::string> split(std::string_view str, char delimiter)
+{
+    std::vector<std::string> ans;
+    size_t b = 0;
+    size_t e = str.find(delimiter);
+    while (e != std::string_view::npos)
+    {
+        if (e != b)
+            ans.emplace_back(str.substr(b, e-b));
+        b = e + 1;
+        e = str.find(delimiter, b);
+    }
+    if (b != str.size())
+        ans.emplace_back(str.substr(b, e));
+    return ans;
 }
 
 

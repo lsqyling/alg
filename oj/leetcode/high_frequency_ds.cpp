@@ -247,19 +247,168 @@ public:
     FreqStack() = default;
 
     void push(int val) {
-        s.push(val);
+        counts[val]++;
+        table[counts[val]].push_back(val);
+        max_times = std::max(max_times, counts[val]);
     }
 
     int pop() {
+        int ret = table[max_times].back();
+        table[max_times].pop_back();
+        if (table[max_times].empty())
+        {
+            table.erase(max_times);
+            --max_times;
+        }
+        --counts[ret];
+        if (counts[ret] == 0)
+            counts.erase(ret);
 
-        auto r = s.top();
-        return r;
+        return ret;
     }
 
-    std::stack<int> s;
+private:
+    int max_times{0};
+    std::unordered_map<int, std::vector<int>> table;
+    std::unordered_map<int, int> counts;
 };
 
+class AllOne {
+public:
+    AllOne() : head(new bucket), tail(new bucket(std::numeric_limits<int>::max()))
+    {
+        head->next = tail;
+        tail->prev = head;
+    }
 
+    ~AllOne()
+    {
+        auto p = head;
+        while (p)
+        {
+            auto tmp = p->next;
+            delete p;
+            p = tmp;
+        }
+    }
+
+    void inc(std::string key) {
+        if (map.find(key) == map.end())
+        {
+            if (head->next->count == 1)
+            {
+                head->next->set.insert(key);
+                map[key] = head->next;
+            }
+            else
+            {
+                auto newb = new bucket(1);
+                newb->set.insert(key);
+                map[key] = newb;
+                add_next(head, newb);
+            }
+        }
+        else
+        {
+            auto b = map[key];
+            if (b->next->count == b->count + 1)
+            {
+                b->next->set.insert(key);
+                map[key] = b->next;
+
+            }
+            else
+            {
+                auto newb = new bucket(b->count + 1);
+                newb->set.insert(key);
+                map[key] = newb;
+                add_next(b, newb);
+            }
+            b->set.erase(key);
+            if (b->set.empty())
+            {
+                remove_bucket(b);
+            }
+        }
+    }
+
+    void dec(std::string key) {
+        auto b = map[key];
+        if (b->count == 1)
+            map.erase(key);
+        else
+        {
+            if (b->count - 1 == b->prev->count)
+            {
+                map[key] = b->prev;
+                b->prev->set.insert(key);
+            }
+            else
+            {
+                auto newb = new bucket(b->count - 1);
+                newb->set.insert(key);
+                map[key] = newb;
+                add_prev(b, newb);
+            }
+        }
+        b->set.erase(key);
+        if (b->set.empty())
+            remove_bucket(b);
+    }
+
+    std::string getMaxKey() {
+        if (tail->prev == head)
+            return {};
+        return *tail->prev->set.begin();
+    }
+
+    std::string getMinKey() {
+        if (head->next == tail)
+            return {};
+        return *head->next->set.begin();
+    }
+
+private:
+    struct bucket
+    {
+        int count;
+        std::unordered_set<std::string> set;
+        bucket *prev;
+        bucket *next;
+        explicit bucket(int freq = 0) : count(freq), prev(nullptr), next(nullptr) {}
+    };
+
+    bucket *head;
+    bucket *tail;
+    std::unordered_map<std::string, bucket *> map;
+
+    void remove_bucket(bucket *b)
+    {
+        b->prev->next = b->next;
+        b->next->prev = b->prev;
+        delete b;
+    }
+
+    void add_next(bucket *b, bucket *x)
+    {
+        x->next = b->next;
+        b->next->prev = x;
+
+        b->next = x;
+        x->prev = b;
+    }
+
+    void add_prev(bucket *b, bucket *x)
+    {
+        b->prev->next = x;
+        x->prev = b->prev;
+
+        x->next = b;
+        b->prev = x;
+    }
+
+
+};
 
 
 
