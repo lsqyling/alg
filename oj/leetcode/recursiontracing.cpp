@@ -590,7 +590,7 @@ public:
 
 void test_queen()
 {
-    int n = 14;
+    int n = 8;
     Solution so;
     auto st = std::chrono::system_clock::now();
     so.totalNQueens(n);
@@ -607,6 +607,362 @@ void test_queen()
 
 }
 
+namespace leetcode_878 {
+// 878. Nth Magical Number
+class Solution {
+public:
+    int nthMagicalNumber(int n, int a, int b) {
+        long ans = 0;
+        long lcm = this->lcm(a, b);
+        for (long l = 0, r = (long)std::min(a, b) * n; l <= r;)
+        {
+            long mid = (l + r) / 2;
+            if (mid / a + mid / b - mid / lcm >= n)
+            {
+                ans = mid;
+                r = mid - 1;
+            }
+            else
+                l = mid + 1;
+        }
+        return ans % 1000'000'007;
+    }
+
+    long lcm(long a, long b)
+    {
+        return a / gcd(a, b) * b;
+    }
+
+    long gcd(long a, long b)
+    {
+        if (b == 0)
+            return a;
+        return gcd(b, a % b);
+    }
+};
+}
+
+namespace applebags {
+/**
+ * 有装下8个苹果的袋子、装下6个苹果的袋子，一定要保证买苹果时所有使用的袋子都装满
+ * 对于无法装满所有袋子的方案不予考虑，给定n个苹果，返回至少要多少个袋子
+ * 如果不存在每个袋子都装满的方案返回-1
+ */
+ int bag0(int apple);
+ int simple_f(int rest);
+ int bag1(int apple);
+
+int bag0(int apple)
+{
+    int ans = simple_f(apple);
+    if (ans == std::numeric_limits<int>::max())
+        return -1;
+    return ans;
+}
+
+int simple_f(int rest)
+{
+    if (rest < 0)
+        return std::numeric_limits<int>::max();
+    if (rest == 0)
+        return 0;
+    int s1 = simple_f(rest - 8);
+    int s2 = simple_f(rest - 6);
+    s1 += s1 == std::numeric_limits<int>::max() ? 0 : 1;
+    s2 += s2 == std::numeric_limits<int>::max() ? 0 : 1;
+
+    return std::min(s1, s2);
+}
+
+int bag1(int apple)
+{
+    if (apple & 1)
+        return -1;
+
+    if (apple == 6 || apple == 8)
+        return 1;
+    if (apple == 12 || apple == 14 || apple == 16)
+        return 2;
+    if (apple < 18)
+        return -1;
+
+    return ( apple - 18 ) / 8 + 3;
+}
+
+void test_apple_bags()
+{
+    for (int i = 1; i < 100; ++i)
+    {
+        auto ans = bag0(i);
+        std::cout << std::format("行号：{} --- {}\n", i, ans == std::numeric_limits<int>::max() ? -1 : ans);
+        std::cout << std::format("行号：{} --- {}\n", i, bag1(i));
+    }
+}
+}
+
+namespace whowineatinggrass {
+/*
+ * 草一共有n的重量，两只牛轮流吃草，A牛先吃，B牛后吃
+ * 每只牛在自己的回合，吃草的重量必须是4的幂，1、4、16、4。。。
+ * 谁在自己的回合正好把草吃完谁赢，根据输入的n，返回谁赢
+ */
+char whowin(int grassn);
+char simple_f(int grassn, char cur);
+char whowin_v(int grassn);
+
+char whowin(int grassn)
+{
+    return simple_f(grassn, 'A');
+}
+
+char simple_f(int grassn, char cur)
+{
+    char enemy = cur == 'A' ? 'B' : 'A';
+    if (grassn < 5)
+        return ( grassn == 0 || grassn == 2 ) ? enemy : cur;
+
+    int pick = 1;
+    while (pick <= grassn)
+    {
+        if (simple_f(grassn - pick, enemy) == cur)
+            return cur;
+
+        pick *= 4;
+    }
+
+    return enemy;
+}
+
+char whowin_v(int grassn)
+{
+    if (((grassn % 5) & 1) == 0)
+        return 'B';
+
+    return 'A';
+}
+
+void test_who_win()
+{
+    for (int i = 0; i < 50; ++i)
+    {
+        std::cout << std::format("{}: {}\n", i, whowin(i));
+        std::cout << std::format("{}: {}\n", i, whowin_v(i));
+
+    }
+}
+}
+
+namespace continuous_sum {
+bool is_continuous_sum(int n)
+{
+    return n > 0 && n == (n & -n);
+}
+
+void test_continuous_sum()
+{
+    for (int i = 1; i < 100; ++i)
+    {
+        std::cout << std::format("{}: {}\n", i, is_continuous_sum(i) ? "T" : "F");
+    }
+}
+}
+
+namespace palindrome_string {
+/*
+ * 可以用r、e、d三种字符拼接字符串，如果拼出来的字符串中
+ * 有且仅有1个长度>=2的回文子串，那么这个字符串定义为"好串”
+ * 1 7 1/ I/ 1///
+ * 返回长度为n的所有可能的字符串中，好串有多少个
+ * 结果对1000000007取模，1<=n<=10^9 示例：n =1，输出0 n=2，输出3  n=3，输出18
+ */
+int count_better_str(int len)
+{
+    if (len == 1)
+        return 0;
+    if (len == 2)
+        return 3;
+    if (len == 3)
+        return 18;
+
+    return (long)(len + 1) * 6 % 1000'000'007;
+}
+
+void test_count_better_str()
+{
+    for (int i = 1; i < 100; ++i)
+    {
+        std::cout << std::format("{}: {}\n", i, count_better_str(i));
+    }
+}
+}
+
+namespace kill_monster {
+/*
+ * 现在有一个打怪类型的游戏，这个游戏是这样的，你有n个技能每一个技能会有一个伤害，
+ * 同时若怪物小于等于一定的血量，则该技能可能造成双倍伤害
+ * 每一个技能最多只能释放一次，已知怪物有m点血量
+ * 现在想问你最少用几个技能能消灭掉他（血量小于等于0）
+ * 技能的数量是n，怪物的血量是m
+ * i号技能的伤害是x[i]，i号技能触发双倍伤害的血量最小值是y[i]
+ * 1<=n<=10
+ *  1 <= m、x[i]、y[i] <= 10^6
+ * 测试链接：https：//www.nowcoder.com/practice/d88ef50f8dab4850be8cd4b95514bbbd 门
+ * 请同学们务必参考如下代码中关于输入、输出的处理
+ * 这是输入输出处理效率很高的写法
+ * 提交以下的所有代码，并把主类名改成“Main”
+ * 可以直接通过
+ */
+constexpr int N = 11;
+
+int kill[N];
+int blood[N];
+
+void swap(int i, int j)
+{
+    std::swap(kill[i], kill[j]);
+    std::swap(blood[i], blood[j]);
+}
+
+int dfs(int i, int n, int r)
+{
+    if (r <= 0)
+        return i;
+    if (i == n)
+        return std::numeric_limits<int>::max();
+
+    int ans = std::numeric_limits<int>::max();
+    for (int j = i; j < n; ++j)
+    {
+        swap(i, j);
+        ans = std::min(ans, dfs(i + 1, n, r - (r > blood[i] ? kill[i] : kill[i] * 2)));
+        swap(i, j);
+    }
+
+    return ans;
+
+}
+
+void entry()
+{
+    int t, n, m;
+    scanf("%d", &t);
+    while (t--)
+    {
+        scanf("%d%d", &n, &m);
+        for (int i = 0; i < n; ++i)
+        {
+            scanf("%d%d", &kill[i], &blood[i]);
+        }
+        int ans = dfs(0, n, m);
+        printf("%d\n", ans == std::numeric_limits<int>::max() ? -1 : ans);
+    }
+}
+}
+
+namespace leetcode_906 {
+class Solution {
+public:
+    int superpalindromesInRange(const std::string& left, const std::string& right) {
+        long l = std::stol(left);
+        long r = std::stol(right);
+        long limit = (long)std::sqrt(r);
+        long seed = 1;
+        long num = 0;
+        long ans = 0;
+        while(num < limit) {
+            num = even_enlarge(seed);
+            if (num <= limit)
+                if (check(num * num, l, r))
+                    ++ans;
+            num = odd_enlarge(seed);
+            if (num <= limit)
+                if (check(num * num, l, r))
+                    ++ans;
+
+            ++seed;
+        }
+
+        return ans;
+    }
+
+    static long odd_enlarge(long seed)
+    {
+        long num = seed;
+        num /= 10;
+        while (num)
+        {
+            seed = seed * 10 + num % 10;
+            num /= 10;
+        }
+        return seed;
+    }
+
+    static long even_enlarge(long seed)
+    {
+        long num = seed;
+        while (num > 0)
+        {
+            seed = seed * 10 + num % 10;
+            num /= 10;
+        }
+        return seed;
+    }
+
+    static bool check(long x, long l, long r)
+    {
+        return x >= l && x <= r && is_palindrome(x);
+    }
+
+    static bool is_palindrome(long n)
+    {
+        if (n < 0)
+            return false;
+        long offset = 1;
+        while (n / offset >= 10)
+            offset *= 10;
+        while (n)
+        {
+            if (n / offset != n % 10)
+                return false;
+            n = (n % offset) / 10;
+            offset /= 100;
+        }
+
+        return true;
+    }
+};
+}
+
+namespace leetcode_9 {
+class Solution {
+public:
+    static bool isPalindrome(int x) {
+        int offset = 1;
+        while (x / offset >= 10)
+            offset *= 10;
+        while (x)
+        {
+            if (x / offset != x % 10)
+                return false;
+            x = ( x % offset ) / 10;
+            offset /= 100;
+        }
+
+        return true;
+    }
+};
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -618,6 +974,15 @@ int main()
     test_leetcode_772();
 
     nqueens::test_queen();
+    applebags::test_apple_bags();
+    whowineatinggrass::test_who_win();
+    continuous_sum::test_continuous_sum();
+    palindrome_string::test_count_better_str();
+
+    long x = 3037007303L;
+    long y = x * x;
+    std::cout << y << std::endl;
+
 
     return 0;
 }
