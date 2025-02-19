@@ -725,11 +725,304 @@ namespace leetcode_115 {
 // 115. Distinct Subsequences
 class Solution {
 public:
-    int numDistinct(std::string s, std::string t) {
+    static int numDistinct(std::string s, std::string t) {
+        int n = static_cast<int>(s.size());
+        int m = static_cast<int>(t.size());
+        // dp[i][j]：s[前缀长度为订的所有子序列中，有多少个子序列等于t[前缀长度为订
+        std::vector<std::vector<unsigned long>> dp(n + 1, std::vector<unsigned long>(m + 1));
+        for (int i = 0; i <= n; ++i)
+            dp[i][0] = 1;
 
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = 1; j <= m; ++j)
+            {
+                dp[i][j] = dp[i-1][j];
+                if (s[i-1] == t[j-1])
+                    dp[i][j] += dp[i-1][j-1];
+            }
+        }
+
+        return (int)dp[n][m];
+    }
+    static int numDistinct_(std::string s, std::string t) {
+        int n = static_cast<int>(s.size());
+        int m = static_cast<int>(t.size());
+        // dp[i][j]：s[前缀长度为订的所有子序列中，有多少个子序列等于t[前缀长度为订
+        std::vector<unsigned long long> dp(m + 1);
+        dp[0] = 1;
+
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = m; j >= 1; --j)
+            {
+                if (s[i-1] == t[j-1])
+                    dp[j] += dp[j-1];
+            }
+        }
+        return (int)dp[m];
     }
 };
 }
+
+namespace leetcode_72 {
+// 72. Edit Distance
+class Solution {
+public:
+    int minDistance(std::string word1, std::string word2) {
+        return md_common(word1, word2, 1, 1, 1);
+    }
+    int md_common(std::string_view word1, std::string_view word2, int a, int b, int c) {
+        int n = static_cast<int>(word1.size());
+        int m = static_cast<int>(word2.size());
+        // dp[i][j]:
+        // s1[前缀长度为i]想变成s2[前缀长度为j]，至少付出多少代价
+        std::vector<std::vector<int>> dp(n + 1, std::vector<int>(m + 1));
+        for (int i = 1; i <= n; ++i)
+            dp[i][0] = i * b;
+        for (int j = 1; j <= m; ++j)
+            dp[0][j] = j * a;
+
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = 1; j <= m; ++j)
+            {
+                if (word1[i-1] == word2[j-1])
+                    dp[i][j] = dp[i-1][j-1];
+                else
+                {
+                    dp[i][j] = std::min(std::min(dp[i-1][j] + b, dp[i][j-1] + a), dp[i-1][j-1] + c);
+                }
+            }
+        }
+
+        return dp[n][m];
+    }
+};
+}
+
+namespace leetcode_97 {
+// 交错字符串
+// 97. Interleaving String
+class Solution {
+public:
+    static bool isInterleave(std::string s1, std::string s2, std::string s3) {
+        int n = static_cast<int>(s1.size());
+        int m = static_cast<int>(s2.size());
+        if (n + m != s3.size())
+            return false;
+        // dp[i][j]：
+        // s1[前缀长度为i]和s2[前缀长度为j]，能否交错组成出s3[前缀长度为i+j]
+        std::vector<std::vector<bool>> dp(n + 1, std::vector<bool>(m + 1));
+        dp[0][0] = true;
+        for (int i = 1; i <= n; ++i)
+        {
+            if (s1[i-1] != s3[i-1])
+                break;
+            dp[i][0] = true;
+        }
+        for (int j = 1; j <= m; ++j)
+        {
+            if (s2[j-1] != s3[j-1])
+                break;
+            dp[0][j] = true;
+        }
+        for (int i = 1; i <= n; ++i)
+        {
+            for (int j = 1; j <= m; ++j)
+            {
+                dp[i][j] = (s1[i-1] == s3[i+j-1] && dp[i-1][j]) || (s2[j-1] == s3[i+j-1] && dp[i][j-1]);
+            }
+        }
+
+        return dp[n][m];
+    }
+};
+}
+
+namespace leetcode_474 {
+// 一和零（多维费用背包)
+// 474. Ones and Zeroes
+class Solution {
+public:
+    static int findMaxForm(std::vector<std::string>& strs, int m, int n) {
+        std::vector<std::vector<int>> dp(m + 1, std::vector<int>(n + 1));
+        for (auto &str : strs)
+        {
+            auto ret = count_zeros_ones(str);
+            for (int z = m; z >= ret.first; --z)
+            {
+                for (int o = n; o >= ret.second; --o)
+                {
+                    dp[z][o] = std::max(dp[z][o],  1 + dp[z-ret.first][o-ret.second]);
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+    // strs.[i。...]自由选择，希望零的数量不超过z、一的数量不超过o
+    // 最多能选多少个字符串
+    int bf(std::vector<std::string>& strs, int i, int z, int o)
+    {
+        if (i == strs.size())
+            return 0;
+        //不使用当前的strs[i]字符串
+        int p1 = bf(strs, i + 1, z, o);
+        //使用当前的strs[i]字符串
+        int p2 = 0;
+        auto ret = count_zeros_ones(strs[i]);
+        if (ret.first <= z && ret.second <= o)
+            p2 = bf(strs, i + 1, z - ret.first, o - ret.second);
+
+        return std::max(p1, p2);
+    }
+    static std::pair<int, int> count_zeros_ones(std::string_view s)
+    {
+        int z = 0;
+        int o = 0;
+        for (auto c : s)
+        {
+            if (c == '1')
+                ++o;
+            if (c == '0')
+                ++z;
+        }
+        return {z, o};
+    }
+};
+}
+
+namespace leetcode_879 {
+// 盈利计划（多维费用背包）
+// 879. Profitable Schemes
+class Solution {
+public:
+    static int profitableSchemes(int n, int minProfit, std::vector<int>& group, std::vector<int>& profit) {
+        //i=没有工作的时候，i==g.length
+        std::vector<std::vector<int>> dp(n + 1, std::vector<int>(minProfit + 1));
+        for (int r = 0; r <= n; ++r)
+        {
+            dp[r][0] = 1;
+        }
+        int m = static_cast<int>(group.size());
+        for (int i = m - 1; i >= 0; --i)
+        {
+            for (int r = n; r >= 0; --r)
+            {
+                for (int s = minProfit; s >= 0; --s)
+                {
+                    int p1 = dp[r][s];
+                    int p2 = group[i] <= r ? dp[r-group[i]][std::max(0, s-profit[i])] : 0;
+                    dp[r][s] = (p1 + p2) % MOD;
+                }
+            }
+        }
+
+        return dp[n][minProfit];
+    }
+    // i：来到i号工作
+    // r：员工额度还有r人，如果r<=0说明已经没法再选择工作了
+    // s：利润还有s才能达标，如果s<=0说明之前的选择已经让利润达标了
+    // 返回：i....r、s，有多少种方案
+    int bf(std::vector<int>& group, std::vector<int>& profit, int i, int r, int s)
+    {
+        if (r <= 0)
+        {
+            //人已经耗尽了，之前可能选了一些工作
+            return s <= 0 ? 1 : 0;
+        }
+        // r > 0
+        if (i == group.size())
+        {
+            // 工作耗尽了
+            return s <= 0 ? 1 : 0;
+        }
+        //之前做了一些选择，不要当前工作
+        int p1 = bf(group, profit, i + 1, r, s);
+        //要当前工作
+        int p2 = 0;
+        if (group[i] <= r)
+        {
+            p2 = bf(group, profit, i + 1, r - group[i], s - profit[i]);
+        }
+
+        return p1 + p2;
+    }
+
+private:
+    static constexpr int MOD = 1000'000'007;
+
+};
+}
+
+namespace leetcode_688 {
+// 骑士在棋盘上的概率
+// 688. Knight Probability in Chessboard
+class Solution {
+public:
+    double knightProbability(int n, int k, int row, int column) {
+        std::vector<std::vector<std::vector<double>>>
+                dp(n, std::vector<std::vector<double>>(n, std::vector<double>(k + 1, -1)));
+
+        return bf(n, row, column, k, dp);
+
+    }
+    //从（i，j）出发还有k步要走，返回最后在棋盘上的概率
+    double bf(int n, int i, int j, int k, std::vector<std::vector<std::vector<double>>> &dp)
+    {
+        if (i < 0 || i >= n || j < 0 || j >= n)
+            return 0;
+        if (dp[i][j][k] != -1)
+            return dp[i][j][k];
+        double ans = 0;
+        if (k == 0)
+            ans = 1;
+        else
+        {
+            ans += bf(n, i - 2, j + 1, k - 1, dp) / 8;
+            ans += bf(n, i - 1, j + 2, k - 1, dp) / 8;
+            ans += bf(n, i + 1, j + 2, k - 1, dp) / 8;
+            ans += bf(n, i + 2, j + 1, k - 1, dp) / 8;
+            ans += bf(n, i + 2, j - 1, k - 1, dp) / 8;
+            ans += bf(n, i + 1, j - 2, k - 1, dp) / 8;
+            ans += bf(n, i - 1, j - 2, k - 1, dp) / 8;
+            ans += bf(n, i - 2, j - 1, k - 1, dp) / 8;
+        }
+
+        dp[i][j][k] = ans;
+        return ans;
+    }
+
+};
+}
+
+namespace leetcode_2435 {
+// 矩阵中和能被K整除的路径
+// 2435. Paths in Matrix Whose Sum Is Divisible by K
+class Solution {
+public:
+    int numberOfPaths(std::vector<std::vector<int>>& grid, int k) {
+
+    }
+
+private:
+    static constexpr int MOD = 1000'000'007;
+};
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
