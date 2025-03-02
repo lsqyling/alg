@@ -1912,13 +1912,94 @@ namespace leetcode_494 {
 // 494. 目标和
 class Solution {
 public:
+    // 新思路，转化为01背包问题
+    // 思考1：
+    // 虽然题目说nums是非负数组，但即使nums.中有负数比如[3，-4，2]
+    // 因为能在每个数前面用+或者-号
+    // 所以[3，-4，2]其实和[3，4，2]会达成一样的结果
+    // 所以即使nums中有负数，也可以把负数直接变成正数，也不会影响结果
+    // 思考2：
+    // 如果nums都是非负数，并且所有数的累加和是sum
+    // 那么如果target>sum，很明显没有任何方法可以达到target，可以直接返回0
+    // 思考3：
+    // nums内部的数组，不管怎么+和-，最终的结果都一定不会改变奇偶性
+    // 所以，如果所有数的累加和是sum，并且与target的奇偶性不一样
+    // 那么没有任何方法可以达到target，可以直接返回0
+    // 思考4（最重要）：
+    // 比如说给定一个数组，nums = [1，2，3，4，5]并且target=3
+    // 其中-个方案是：+1-2+3-4+5=3
+    // 该方案中取了正的集合为A={1，3，5}
+    // 该方案中取了负的集合为B={2，4}
+    // 所以任何一种方案，都一定有sum（A）－sum（B）=target
+    // 现在我们来处理一下这个等式，把左右两边都加上sum（A）+Sum（B），那么就会变成如下：
+    // sum(A)-sum(B)+sum(A)+sum(B)=target+sum(A)+sum(B)
+    // 2*sum（A）=target+数组所有数的累加和
+    // sum（A）=（target+数组所有数的累加和）/2
+    // 也就是说，任何一个集合，只要累加和是（target+数组所有数的累加和）/2
+    // 那么就一定对应一种target的方式
+    // 比如非负数组nums，target=1，nums所有数累加和是11
+    // 求有多少方法组成1，其实就是求，有多少种子集累加和达到6的方法，（1+11）/2=6
+    // 因为，子集累加和6 - 另一半的子集累加和5=1（target）
+    // 所以有多少个累加和为6的不同集合，就代表有多少个target==1的表达式数量
+    // 至此已经转化为01背包问题了
     int findTargetSumWays(std::vector<int>& nums, int target) {
+        int sum = 0;
+        for (auto num : nums)
+            sum += num;
 
+        if (sum < target || ((target & 1) ^ (sum & 1)) == 1)
+            return 0;
+        return subsets(nums, (target + sum) >> 1);
+    }
+    // 求非负数组nums有多少个子序列累加和是t
+    // 01背包问题（子集累加和严格是t）+空间压缩
+    // dp[i][j] =dp[i-1][j] +dp[i-1][j-nums[i]]
+    static int subsets(std::vector<int> &nums, int t)
+    {
+        if (t < 0)
+            return 0;
+        std::vector<int> dp(t + 1);
+        dp[0] = 1;
+        for (int num : nums)
+        {
+            for (int j = t; j >= num; --j)
+            {
+                dp[j] += dp[j-num];
+            }
+        }
+        return dp[t];
     }
 };
 }
 
+namespace leetcode_1049 {
+// 1049. 最后一块石头的重量 II
+class Solution {
+public:
+    static int lastStoneWeightII(std::vector<int>& stones) {
+        int sum = 0;
+        for (auto n : stones)
+            sum += n;
+        int half = near_half(stones, sum / 2);
 
+        return sum - half - half;
+    }
+    static int near_half(std::vector<int> &nums, int t)
+    {
+        // 非负数组nums中，子集累加和不超过t，但是最接近t的累加和是多少
+        // 01背包问题（子集累加和尽量接近t）+空间压缩
+        std::vector<int> dp(t + 1);
+        for (int num : nums)
+        {
+            for (int j = t; j >= num; --j)
+            {
+                dp[j] = std::max(dp[j], dp[j-num] + num);
+            }
+        }
+        return dp[t];
+    }
+};
+}
 
 
 
