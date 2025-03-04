@@ -472,11 +472,109 @@ public:
 };
 }
 
+namespace leetcode_1121 {
+// 1121. 将数组分成几个递增序列 - 力扣（LeetCode）
+class Solution
+{
+public:
+    static bool canDivideIntoSubsequences(std::vector<int> &nums, int k)
+    {
+        int cnt = 1;
+        int maxcnt = 1;
+        for (int i = 1; i < nums.size(); ++i)
+        {
+            if (nums[i-1] == nums[i])
+            {
+                maxcnt = std::max(maxcnt, cnt);
+                cnt = 1;
+            }
+            else
+            {
+                ++cnt;
+            }
+        }
+        maxcnt = std::max(maxcnt, cnt);
+        return nums.size() / maxcnt >= k;
+    }
+};
+}
 
+namespace leetcode_871 {
+// 871. 最低加油次数
+class Solution {
+public:
+    static int minRefuelStops(int target, int startFuel, std::vector<std::vector<int>>& stations) {
+        if (startFuel >= target)
+            return 0;
+        // 大根堆
+        std::priority_queue<int> maxheap;
+        //包括初始油量+沿途加的油，能让你达到什么位置，to
+        int to = startFuel;
+        int cnt = 0;
+        for (auto &station : stations)
+        {
+            int pos = station[0];
+            int fuel = station[1];
+            if (to < pos)
+            {
+                while (!maxheap.empty() && to < pos)
+                {
+                    to += maxheap.top(); maxheap.pop();
+                    ++cnt;
+                    if (to >= target)
+                        return cnt;
+                }
+                if (to < pos)
+                    return -1;
+            }
+            maxheap.push(fuel);
+        }
+        //代码能走到这里，说明还没到达target
+        //如果还有油，看看能不能冲到target
+        while (!maxheap.empty())
+        {
+            to += maxheap.top(); maxheap.pop();
+            ++cnt;
 
+            if (to >= target)
+            {
+                return cnt;
+            }
+        }
+        return -1;
+    }
+};
+}
 
+namespace leetcode_45 {
+// 45. 跳跃游戏 II
+class Solution {
+public:
+    static int jump(std::vector<int>& nums) {
+        int n = static_cast<int>(nums.size());
+        //当前步以内，最右到哪
+        int cur = 0;
+        //如果再一步，（当前步+1）以内，最右到哪
+        int next = 0;
+        //一共需要跳几步
+        int ans = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            //来到i下标
+            //cur包括了i所在的位置，不用付出额外步数
+            //cur没有包括i所在的位置，需要付出额外步数
+            if (cur < i)
+            {
+                ++ans;
+                cur = next;
+            }
+            next = std::max(next, i + nums[i]);
+        }
 
-
+        return ans;
+    }
+};
+}
 
 
 
