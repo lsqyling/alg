@@ -570,7 +570,6 @@ public:
             }
             next = std::max(next, i + nums[i]);
         }
-
         return ans;
     }
 };
@@ -605,9 +604,9 @@ public:
 
 int main()
 {
-    std::priority_queue<int, std::vector<int>, std::greater<>> heap;
+    std::priority_queue<int, std::vector<int>, std::greater<>> minheap;
     for (int i = 0; i < 10; ++i)
-        heap.push(i);
-    std::cout << heap.top();
+        minheap.push(i);
+    std::cout << minheap.top();
     return 0;
 }
