@@ -105,7 +105,35 @@ public:
 };
 }
 
-
+namespace leetcode_572 {
+//572. 另一棵树的子树
+/**
+ * Definition for a binary tree node.
+ */
+ struct TreeNode {
+     int val{0};
+     TreeNode *left{nullptr};
+     TreeNode *right{nullptr};
+ };
+class Solution {
+public:
+    bool isSubtree(TreeNode* root, TreeNode* subRoot) {
+        if (root && subRoot)
+            return same(root, subRoot) || isSubtree(root->left, subRoot) || isSubtree(root->right, subRoot);
+        return subRoot == nullptr;
+    }
+    bool same(TreeNode *t1, TreeNode *t2)
+    {
+        if (t1 == nullptr && t2 == nullptr)
+            return true;
+        if (t1 && t2)
+        {
+            return t1->val == t2->val && same(t1->left, t2->left) && same(t1->right, t2->right);
+        }
+        return false;
+    }
+};
+}
 
 
 
@@ -122,5 +150,7 @@ public:
 
 int main()
 {
+    std::list<int> li;
+    std::vector<int> vec;
     return 0;
 }
