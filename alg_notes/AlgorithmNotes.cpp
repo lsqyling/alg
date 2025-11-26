@@ -6,8 +6,6 @@
 #include <set>
 #include <cstdio>
 #include "CommonHeaders.h"
-#include "../part_1_linear/include/Stack.h"
-#include "../part_1_linear/include/Queue.h"
 
 /*
  * read a new line,If end of line is encountered, it is extracted but not stored into buf.
@@ -474,24 +472,6 @@ void entryStringHash()
 }
 }
 
-/*
- * 2020/19
- * Lesson 12 Goodbye and good luck
- * First listen and then answer the question.
- * Where is Captain Alison going and how?
- * Our neighbour, Captain Charles Alison will sail from Portsmouth tomorrow.We'll meet him at harbour early in the morning.
- * He will be in his small boat, Topsail. Topsail is a famous little boat. It has sailed across the Atlantic many times.
- * Captain Alison will set out at eight o'clock, so we'll have plenty of time. We'll see his boat and we'll say goodbye to
- * him. He will be away for two months. We are very proud of him. He will take part in an important race across the Atlantic.
- *
- * Composition:
- * Something about Mr.Jason
- * Mr.Jason is a visitor from America.He arrived in Beijing yesterday.He will stay in China for about half a year.During the
- * period, he is going to visit some middle schools in different cities.He wants to collect some information. He has planned
- * to write book about middle school education in China when he gets back to his country.At the same time, he will go to
- * Shanghai for an important meeting. He will be there for a week.He said he would come to China again next year.
- *
- */
 
 namespace _4_3DivideConquer {
 int factorial(int n)
@@ -1631,7 +1611,7 @@ void preOrderTraversal(SNode *root)
     }
 }
 
-using Stack = linear::Stack<SNode *>;
+using Stack = std::stack<SNode *>;
 
 void preOrder(SNode *root)
 {
@@ -1647,7 +1627,7 @@ void preOrder(SNode *root)
         }
         if (!S.empty())
         {
-            p = S.pop();
+            p = S.top(); S.pop();
             p = p->right_;
         }
     }
@@ -1677,7 +1657,7 @@ void inOrder(SNode *root)
         }
         if (!S.empty())
         {
-            p = S.pop();
+            p = S.top(); S.pop();
             cout << p->data_;
             p = p->right_;
         }
@@ -1804,17 +1784,18 @@ void entryLayerTraversal()
         scanf("%d", &inOrder[j]);
     }
     auto root = createTree(postOrder, inOrder, 0, n - 1, 0, n - 1);
-    linear::Queue<Node *> Q;
-    Q.enqueue(root);
+    std::queue<Node *> Q;
+    Q.push(root);
     int cnt = 0;
     while (!Q.empty())
     {
-        auto now = Q.dequeue();
+        auto now = Q.front();
+        Q.pop();
         ++cnt;
         printf("%d", now->data_);
         if (cnt < n) printf(" ");
-        if (now->left_) Q.enqueue(now->left_);
-        if (now->right) Q.enqueue(now->right);
+        if (now->left_) Q.push(now->left_);
+        if (now->right) Q.push(now->right);
     }
 }
 }
@@ -1839,38 +1820,21 @@ void preorder(int root)
     }
 }
 
-/*
- * 2020/1/12
- * Lesson 14 Do you speak English?
- * First listen and then answer the question
- * Did the young man speak English?
- * I had an amusing experience last year. After I had left the small village in the South of France, I drove on to the next
- * town. On the way, a young man waved to me.I stopped and he asked me for a lift.As soon as he had got into the car, I said
- * good morning to him in French and he replied in the same language. Apart from a few words, I do not know any French at all.
- * Neither of us spoken during the journey. I had nearly reached the town when the young man suddenly said, very slowly,
- * 'Do you speak English?' As I soon learnt, he was English himself.
- *
- * Composition:
- * We all know English is very useful for us. I study English every day. And I always get good grades in exams. But I cant't
- * speak English well. So I ask my pen friend for some advice.Firstly, he told me to speak English as much as possible.
- * Secondly, he thought I should keep a diary in English. Thirdly, he asked me to listen to English songs and watch English
- * films.Listening can also help with spoken English. I think these are good ways to improve my spoken English.
- */
-
 void layerOrder(int root)
 {
-    linear::Queue<int> Q;
-    Q.enqueue(root);
+    std::queue<int> Q;
+    Q.push(root);
     tree[root].layer_ = 0;
     while (!Q.empty())
     {
-        auto front = Q.dequeue();
+        auto front = Q.front();
+        Q.pop();
         printf("%d ", tree[front].data_);
         for (int i = 0; i < tree[front].child_.size(); ++i)
         {
             auto child = tree[front].child_[i];
             tree[child].layer_ = tree[front].layer_ + 1;
-            Q.enqueue(child);
+            Q.push(child);
         }
     }
 }
@@ -3899,30 +3863,6 @@ void entry()
     printf("%d\n", dp[lenA][lenB]);
 }
 }
-
-/*
- * 2020/1/27
- * Lesson 27 A wet night
- * First listen and then answer the question
- * What happened to boys in the night?
- * Late in the afternoon, the boys put up their tent in the middle of a field.As soon as this was done, they cooked a meal
- * over an open fire.They were all hungry and food smelled good. After a wonderful meal they told stories and sang songs by
- * the campfire.But some time later it began to rain.The boys felt tired and they put out the fire and crept into their tent.
- * Their sleeping bags were warm and comfortable, so they all slept soundly. In the middle of the night, two boys woke up and began
- * shouting. The tent was full of water.They all leapt out of their sleeping bags and hurried outside. It was raining heavily and
- * they found that a stream had formed in the field. The stream wound its way across the field and then flowed right under their tent.
- *
- * Composition:
- * Once a young man was travelling on a train. He was causing a lot of trouble to the passengers around him. At last he
- * got out at a station with his two heavy bags. No one helped him. When he was quite far away from the train, one of the other
- * passengers opened the window and shouted to him, "You left something behind on the train." Then he closed the window.
- * The young man turned back to the train with his two bags, very tired. "What did I leave behind?" he shouted through the
- * window.
- * As the train began to move again. the passenger who had called him back opened the window again and said, "A very bad impression."
- *
- *
- *
- */
 
 namespace LPS {
 /*
