@@ -9,7 +9,30 @@
  * 从而显著提高算法效率。
  */
 
-
+namespace leetcode_31 {
+// 31. Next Permutation
+class Solution {
+public:
+    void nextPermutation(std::vector<int>& nums) {
+        // step1. 从右向左找到第一个下降的位置 nums[i] < nums[i+1]
+        int i = nums.size() - 2;
+        while (i >= 0 && nums[i] >= nums[i+1]) {
+            --i;
+        }
+        if (i >= 0) {
+            // step2. 从右向左找到第一个大于 nums[i] 的 nums[j]
+            int j = nums.size() - 1;
+            while (nums[j] <= nums[i]) {
+                --j;
+            }
+            // step3. 交换
+            std::swap(nums[i], nums[j]);
+        }
+        // Step 4: 反转 i+1 到末尾
+        std::reverse(nums.begin() + i + 1, nums.end());
+    }
+};
+}
 
 
 
