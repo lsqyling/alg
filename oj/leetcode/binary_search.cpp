@@ -67,10 +67,11 @@ int find_right(const std::vector<int> &arr, int x)
 void test_finds()
 {
     std::vector<int> arr{0, 3, 4, 6, 8, 12, 15, 21, 21, 21, 23, 25};
-    std::cout << std::format("25 pos: {}\n", find(arr, 23));
+    std::cout << std::format("23 pos: {}\n", find(arr, 23));
+    std::cout << std::format("22 pos: {}\n", find(arr, 22));
 
     std::cout << std::format(">=26 left pos: {}\n", find_left(arr, 26));
-    std::cout << std::format("<=21 right pos: {}\n", find_right(arr, 26));
+    std::cout << std::format("<=21 right pos: {}\n", find_right(arr, 21));
 }
 
 namespace leetcode_33 {

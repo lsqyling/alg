@@ -137,6 +137,110 @@ public:
 };
 }
 
+namespace leetcode_51 {
+// 51. N-Queens
+class Solution {
+public:
+    std::vector<std::vector<std::string>> solveNQueens(int n) {
+        std::vector<std::vector<std::string>> result;
+        std::vector<std::string> board(n, std::string(n, '.'));
+
+        std::vector<bool> col(n, false);
+        std::vector<bool> diag1(2 * n - 1, false);
+        std::vector<bool> diag2(2 * n - 1, false);
+        backtrack(0, n, board, col, diag1, diag2, result);
+        return result;
+    }
+
+    void backtrack(int row, int n, std::vector<std::string> &board,
+                   std::vector<bool> &col, std::vector<bool> &diag1, std::vector<bool> &diag2,
+                   std::vector<std::vector<std::string>> &result) {
+        if (row == n) {
+            result.push_back(board); // 找到一个解
+            return ;
+        }
+        for (int j = 0; j < n; ++j) {
+            if (col[j] || diag1[row - j + n - 1] || diag2[row + j]) {
+                continue; // 冲突跳过
+            }
+
+            // 放置皇后
+            board[row][j] = 'Q';
+            col[j] = true;
+            diag1[row-j+n-1] = true;
+            diag2[row+j] = true;
+            // 递归下一行
+            backtrack(row + 1, n, board, col, diag1, diag2, result);
+
+            // 回溯
+            board[row][j] = '.';
+            col[j] = false;
+            diag1[row-j+n-1] = false;
+            diag2[row+j] = false;
+        }
+    }
+};
+}
+
+namespace leetcode_52 {
+// 52. N-Queens II
+class Solution {
+public:
+    int totalNQueens(int n) {
+        std::vector<bool> col(n, false);
+        std::vector<bool> diag1(2 * n - 1, false);
+        std::vector<bool> diag2(2 * n - 1, false);
+        int count = 0;
+        backtrack(0, n, col, diag1, diag2, count);
+        return count;
+    }
+
+    void backtrack(int row, int n,
+                   std::vector<bool> &col, std::vector<bool> &diag1, std::vector<bool> &diag2,
+                   int &count) {
+        if (row == n) {
+            ++count;
+            return ;
+        }
+        for (int j = 0; j < n; ++j) {
+            int d1 = row - j + n - 1;
+            int d2 = row + j;
+            if (col[j] || diag1[d1] || diag2[d2]) {
+                continue;
+            }
+            // 放置
+            col[j] = true;
+            diag1[d1] = true;
+            diag2[d2] = true;
+            backtrack(row + 1, n, col, diag1, diag2, count);
+            // 回溯
+            col[j] = false;
+            diag1[d1] = false;
+            diag2[d2] = false;
+        }
+    }
+};
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
